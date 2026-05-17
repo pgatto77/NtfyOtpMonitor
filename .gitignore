@@ -1,0 +1,55 @@
+# =========================
+# Visual Studio / VB.NET
+# =========================
+
+# Build output
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+*.dll
+*.exe
+*.pdb
+
+# NuGet
+*.nupkg
+packages/
+project.lock.json
+project.assets.json
+nuget.exe
+.nuget/
+
+# Logs
+*.log
+
+# IIS Express
+
+# TFS / Git ignore extras
+$tf/
+*.vspscc
+*.vssscc
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# Visual Studio Code (se usato)
+.vscode/
+
+# Publish output
+publish/
+
+# Windows thumbnails / system
+Thumbs.db
+Desktop.ini
+
+# Backup files
+*.bak
+*.tmp
