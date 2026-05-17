@@ -18,7 +18,7 @@ Module Program
 
     ' Preferenze utente (impostate di default, modificabili a piacimento)
     Private IsCopyMode As Boolean = True
-    Private IsSoundEnabled As Boolean = True
+    Private IsSoundEnabled As Boolean = False
 
     ' Regex e Percorsi
     Private ReadOnly OTP_REGEX As New Regex("(?:^|\s)(\S{8})(?=\s|$)", RegexOptions.Compiled)
@@ -39,6 +39,8 @@ Module Program
     Private WithEvents TrayIcon As NotifyIcon
     Private WithEvents TrayMenu As ContextMenuStrip
 
+    ' 1. CORREZIONE: Aggiunto attributo per forzare il Thread Principale in modalità STA
+    <STAThread()>
     Sub Main()
         ' --- 1. CONTROLLO DOPPIO AVVIO (MUTEX) ---
         Dim createdNew As Boolean
@@ -70,9 +72,11 @@ Module Program
         End If
 
         ' --- 5. AVVIO MONITORAGGIO (BACKGROUND THREAD) ---
+        ' 2. CORREZIONE: Questa è la sezione che non trovavi. Inserito anche il consiglio extra (STA)
         Dim t As New Threading.Thread(AddressOf StartSseListening) With {
             .IsBackground = True
         }
+        t.SetApartmentState(Threading.ApartmentState.STA) ' <--- Consiglio Extra applicato
         t.Start()
 
         ' Mantiene in vita l'applicazione gestendo i messaggi di Windows
@@ -153,8 +157,6 @@ Module Program
             ' Determina il valore della data di aggiornamento da scrivere
             If newTopic = "---" OrElse newTopic = "inserisci_topic_qui" OrElse newTopic = "Topic-esempio" OrElse resettaData Then
                 ULTIMO_AGGIORNAMENTO = ""
-            Else
-                ULTIMO_AGGIORNAMENTO = DateTime.Now.ToString("G")
             End If
 
             If File.Exists(ConfigPath) Then
@@ -272,6 +274,7 @@ Module Program
                                         Dim line As String = reader.ReadLine()
                                         If Not String.IsNullOrEmpty(line) Then ProcessJson(line)
                                     End While
+
                                 End Using
                             End Using
                         End Using
@@ -304,12 +307,13 @@ Module Program
     End Sub
 
     Private Sub HandleOTP(code As String)
+        ' 3. CORREZIONE: Sostituito .Invoke con .BeginInvoke per un passaggio asincrono e pulito al thread UI
         If TrayMenu IsNot Nothing AndAlso TrayMenu.InvokeRequired Then
-            TrayMenu.Invoke(Sub() HandleOTP(code))
+            TrayMenu.BeginInvoke(Sub() HandleOTP(code))
             Return
         End If
 
-        ' --- THREAD PRINCIPALE (STA) ---
+        ' --- ORA SEI SICURAMENTE NEL THREAD PRINCIPALE (STA) ---
 
         ' 1. Riproduzione suono
         If IsSoundEnabled Then
@@ -335,7 +339,7 @@ Module Program
         Try
             Dim toast As New ToastContentBuilder()
             toast.AddText("OTP Ricevuto")
-            toast.AddText("Codice: " & code & If(IsCopyMode, " (Copiato negli appunti)", " (Digitato)"))
+            toast.AddText(code & If(IsCopyMode, "  -  Copiato", "  -  Digitato"))
             toast.Show()
         Catch ex As Exception
             WriteLog("Errore visualizzazione Toast: " & ex.Message)
