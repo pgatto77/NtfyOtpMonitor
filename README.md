@@ -34,7 +34,7 @@ Riproduci suono: Attiva/disattiva il feedback acustico alla ricezione.
 
 Cambia Topic: Permette di modificare il canale di ascolto senza riavviare manualmente.
 
-Log Rotativo: Viene generato un file log.txt che conserva le ultime 200 operazioni per monitorare lo stato della connessione e le ricezioni.
+Log Rotativo: Viene generato un file log.txt che conserva le ultime n operazioni per monitorare lo stato della connessione e le ricezioni.
 
 📦 Caratteristiche Tecniche
 Portable: Non richiede installazione.
@@ -46,9 +46,9 @@ Leggero: Sviluppato in .NET Framework 4.8, consuma minime risorse di sistema.
 Sicurezza: Supporta topic privati tramite autenticazione con Token.
 
 ⚠️ Requisiti
-Windows 7 SP1 o superiore.
+Windows 10 o superiore.
 
-.NET Framework 4.8 installato.
+.NET 8.0 (runtime) installato.
 
 Smartphone Android con app Automate configurata.
 
